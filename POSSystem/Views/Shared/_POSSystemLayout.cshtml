@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title - TrikeMaster POS</title>
+
+    <!-- 1. CSS STYLES -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- 2. CORE UTILITIES -->
+    <script src="~/Scripts/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- 3. ANGULARJS CORE (Must load before any Angular-dependent scripts) -->
+    <script src="~/Scripts/angular.min.js"></script>
+
+    <!-- 4. EXTERNAL PLUGINS (Must load before your custom Module.js) -->
+    <!-- Ensure chart.min.js is version 2.9.4 for compatibility with angular-chart -->
+    <script src="~/Scripts/chart.min.js"></script>
+    <script src="~/Scripts/angular-chart.min.js"></script>
+
+    <!-- 5. YOUR APP SCRIPTS (Must load after all libraries) -->
+    <!-- Module.js must initialize the 'POSApp' with ['chart.js'] dependency -->
+    <script src="~/Scripts/HolyScripts/Module.js"></script>
+    <script src="~/Scripts/HolyScripts/Service.js"></script>
+    <script src="~/Scripts/HolyScripts/Controller.js"></script>
+</head>
+
+<body ng-app="POSApp">
+
+    <div class="main-content">
+        @RenderBody()
+    </div>
+
+    <!-- 6. BOTTOM SCRIPTS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</body>
+</html>

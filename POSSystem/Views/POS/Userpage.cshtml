@@ -1,0 +1,209 @@
+﻿@{
+    Layout = "~/Views/Shared/_POSSystemLayout.cshtml";
+}
+
+<!-- Load Chart.js and Angular-Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/angular-chart.js@1.1.1/dist/angular-chart.min.js"></script>
+
+<div ng-controller="POSSystemController" ng-init="initUserPage()">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-blue: #1a237e;
+        --accent-yellow: #fdd835;
+        --deep-dark: #0a0e23;
+        --soft-gray: #f4f7fa;
+        --error-red: #d32f2f;
+        --success-green: #2e7d32;
+    }
+
+    body {
+        background: linear-gradient(rgba(244, 247, 250, 0.95), rgba(244, 247, 250, 0.95)),
+                    url('/Content/images/bg1.jpg');
+        background-attachment: fixed;
+        background-size: cover;
+        font-family: 'Inter', sans-serif;
+    }
+
+    nav {
+        background-color: var(--deep-dark);
+        height: 70px;
+        line-height: 70px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        margin-top: 40px;
+        border-left: 8px solid var(--primary-blue);
+    }
+
+    .graph-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        margin-top: 20px;
+        min-height: 380px;
+    }
+
+    .stat-label {
+        color: #757575;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+        font-weight: 800;
+        margin: 0;
+    }
+
+    /* DEBUG STYLING */
+    .debug-panel {
+        margin-top: 30px;
+        background: #212121;
+        color: #00e676;
+        padding: 20px;
+        border-radius: 10px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 12px;
+        overflow-x: auto;
+    }
+</style>
+
+<nav>
+    <div class="nav-wrapper" style="padding: 0 30px;">
+        <a href="@Url.Action("HomePage","POS")" class="brand-logo left" style="display:flex; align-items:center;">
+            <div style="background:var(--accent-yellow); color:var(--deep-dark); padding:5px; border-radius:6px; margin-right:12px; line-height: 1;">
+                <i class="material-icons">precision_manufacturing</i>
+            </div>
+            <span style="font-weight:900; color:white; letter-spacing:1.5px;">TRIKE<b>MASTER</b></span>
+        </a>
+        <ul class="right">
+            <li>
+                <a href="javascript:void(0)" ng-click="logout()" style="display:flex; align-items:center; color:white; font-weight:600;">
+                    <i class="material-icons left" style="margin-right:8px;">logout</i> Logout
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="profile-card">
+        <!-- Loading State -->
+        <div ng-if="!userArray || userArray.length == 0" class="center-align" style="padding:40px;">
+            <div class="preloader-wrapper small active" style="margin-right:15px;">
+                <div class="spinner-layer spinner-blue-only">
+                    <div class="circle-clipper left"><div class="circle"></div></div>
+                    <div class="gap-patch"><div class="circle"></div></div>
+                    <div class="circle-clipper right"><div class="circle"></div></div>
+                </div>
+            </div>
+            <h5 style="display:inline; font-weight:600; vertical-align:middle;">Loading your account...</h5>
+        </div>
+
+        <div ng-if="userArray && userArray.length > 0">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h4 style="margin:0; font-weight:900; color:var(--deep-dark);">Welcome, {{userArray[0].full_name}}</h4>
+                <span class="badge" ng-class="userArray[0].status === 'Active' ? 'green white-text' : 'orange white-text'" 
+                      style="border-radius:4px; padding:5px 15px; height:auto; font-weight:700;">
+                    {{userArray[0].status}}
+                </span>
+            </div>
+
+            <!-- Pending Status View -->
+            <div ng-if="userArray[0].status !== 'Active'" class="center-align" style="margin-top:40px; padding:30px; background:var(--soft-gray); border-radius:15px;">
+                <i class="material-icons large" style="color:var(--accent-yellow);">hourglass_empty</i>
+                <h5 style="font-weight:700;">Account Under Review</h5>
+                <p class="grey-text text-darken-1">Your payment plan is still being prepared by the administration. <br>Please check back later to see your financial breakdown and charts.</p>
+            </div>
+
+            <!-- Active Status View -->
+            <div ng-if="userArray[0].status === 'Active'">
+                <div class="row" style="margin-top:30px;">
+                    <div class="col s12 m3">
+                        <p class="stat-label">Total Contract</p>
+                        <h4 class="stat-value">₱{{userArray[0].total_price | number:2}}</h4>
+                    </div>
+                    <div class="col s12 m3">
+                        <p class="stat-label">Monthly Rate</p>
+                        <h4 class="stat-value" style="color:var(--success-green);">₱{{userArray[0].monthly_rate | number:2}}</h4>
+                    </div>
+                    <div class="col s12 m3">
+                        <p class="stat-label">Remaining Balance</p>
+                        <h4 class="stat-value" style="color:var(--error-red);">₱{{userArray[0].balance | number:2}}</h4>
+                    </div>
+                    <div class="col s12 m3">
+                        <p class="stat-label">Next Due Date</p>
+                        <h4 class="stat-value" style="color:var(--primary-blue);">{{userArray[0].due_date ? (userArray[0].due_date.split('(')[1].split(')')[0] * 1 | date:'MMMM d, yyyy') : 'No Date Set'}}</h4>
+                    </div>
+                </div>
+
+                <div style="background:#fff8e1; padding:20px; border-radius:12px; border:1px solid #fdd835; display:flex; align-items:center; margin-bottom:30px; margin-top:10px;">
+                    <i class="material-icons" style="margin-right:15px; color:#f57f17; font-size:30px;">notification_important</i>
+                    <span style="font-size:1.1rem;">
+                        Your next installment of <b style="color:var(--success-green);">₱{{userArray[0].monthly_rate | number:2}}</b> 
+                        is scheduled for 
+                    <b style="color:var(--primary-blue);">
+                        {{userArray[0].due_date ? (userArray[0].due_date.split('(')[1].split(')')[0] * 1 | date:'MMMM d, yyyy') : 'No Date Set'}}
+                    </b>.
+                    </span>
+                </div>
+
+                <!-- GRAPHS SECTION -->
+                <div class="row">
+                    <div class="col s12 m5">
+                        <div class="graph-card">
+                            <h6 style="font-weight:800; margin-bottom:25px; color:var(--primary-blue); text-transform:uppercase;">
+                                <i class="material-icons left" style="font-size:20px;">pie_chart</i> Payment Progress
+                            </h6>
+                            <div style="height:250px;">
+                                <canvas id="userDonut" class="chart chart-doughnut"
+                                        chart-data="userDonutData" 
+                                        chart-labels="userDonutLabels"
+                                        chart-colors="userDonutColors"
+                                        chart-options="userPieOptions">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col s12 m7">
+                        <div class="graph-card">
+                            <h6 style="font-weight:800; margin-bottom:25px; color:var(--primary-blue); text-transform:uppercase;">
+                                <i class="material-icons left" style="font-size:20px;">show_chart</i> Payment History
+                            </h6>
+                            <div style="height:250px;">
+                                <canvas id="userLine" class="chart chart-line" 
+                                        chart-data="userLineData" 
+                                        chart-labels="userLineLabels" 
+                                        chart-series="['Amount Paid']" 
+                                        chart-colors="userLineColors"
+                                        chart-options="userLineOptions">
+                                </canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    // Pure JS to check session storage immediately on load
+    document.addEventListener('DOMContentLoaded', function() {
+        const userId = sessionStorage.getItem('loggedUserId');
+        document.getElementById('debugId').innerText = userId ? userId : "NULL (Session Missing)";
+    });
+</script>

@@ -1,0 +1,214 @@
+﻿@{
+    Layout = "~/Views/Shared/_POSSystemLayout.cshtml";
+}
+
+<!-- Required Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Ensure angular-chart.js is included after Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/angular-chart.js@1.1.1/dist/angular-chart.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<style>
+    :root {
+        --primary-blue: #1a237e;
+        --accent-yellow: #fdd835;
+        --deep-dark: #0a0e23;
+        --soft-gray: #f4f7fa;
+        --graph-teal: #008080;
+    }
+
+    body {
+        background: linear-gradient(rgba(244, 247, 250, 0.95), rgba(244, 247, 250, 0.95)),
+                    url('/Content/images/bg1.jpg');
+        background-attachment: fixed;
+        background-size: cover;
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+    }
+
+    nav {
+        background-color: var(--deep-dark);
+        height: 80px;
+        line-height: 80px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        width: 100% !important;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border-bottom: 5px solid var(--primary-blue);
+        transition: 0.3s;
+        margin-bottom: 20px;
+        height: 100%;
+    }
+
+    .stat-card:hover { transform: translateY(-5px); }
+
+    .stat-card h5 {
+        margin: 0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: #78909c;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .stat-card h2 {
+        margin: 10px 0 0 0;
+        font-weight: 900;
+        color: var(--deep-dark);
+        font-size: 1.8rem;
+    }
+
+    .graph-container {
+        background: white;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        margin-bottom: 30px;
+        position: relative; /* Essential for responsive charts */
+        min-height: 450px;   /* Change from height: 400px */
+    }
+
+    .menu-card {
+        background: white;
+        padding: 40px 20px;
+        border-radius: 20px;
+        text-align: center;
+        transition: 0.3s;
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .menu-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 35px rgba(26, 35, 126, 0.12);
+        border-color: var(--primary-blue);
+    }
+
+    .menu-label {
+        font-weight: 800;
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+        color: var(--deep-dark);
+        text-transform: uppercase;
+        display: block;
+        margin-top: 10px;
+    }
+</style>
+
+<div ng-controller="POSSystemController" ng-init="getBusinessDashboard()">
+
+    <nav>
+        <div class="nav-wrapper" style="padding: 0 30px;">
+            <a href="@Url.Action("HomePage","POS")" class="brand-logo left">
+                <div style="background:var(--accent-yellow); color:var(--deep-dark); padding:5px; border-radius:6px; margin-right:12px; line-height: 1; display: inline-block;">
+                    <i class="material-icons" style="vertical-align: middle;">precision_manufacturing</i>
+                </div>
+                <span style="font-weight:900; color:white; letter-spacing:1.5px;">
+                    TRIKE<b>MASTER</b>
+                </span>
+            </a>
+
+            <ul class="right">
+                <li>
+                    <a href="javascript:void(0)" ng-click="logout()" style="display:flex; align-items:center; color:white; font-weight:600;">
+                        <i class="material-icons left">logout</i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div style="margin-top: 40px; margin-bottom: 30px;">
+            <h3 style="font-weight: 900; color: var(--primary-blue); margin:0;">
+                Management Overview
+            </h3>
+            <p class="grey-text">
+                Real-time business performance analytics for your TrikeMaster fleet.
+            </p>
+        </div>
+
+        <!-- Dynamic Stat Cards -->
+        <div class="row">
+            <div class="col s12 m4" ng-repeat="crd in cardData">
+                <div class="stat-card" ng-style="{'border-bottom-color': crd.StatusDesc == 'Outstanding Balance' ? 'var(--accent-yellow)' : 'var(--primary-blue)'}">
+                    <h5>{{crd.StatusDesc}}</h5>
+                    <h2>
+                        {{ crd.StatusDesc.includes('Value') || crd.StatusDesc.includes('Balance') ? (crd.StatusCount | currency:'₱') : crd.StatusCount }}
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col s12 l12">
+                <div class="graph-container">
+                    <h6 style="font-weight:700; margin-bottom:20px;">Sales Performance Trend</h6>
+                    <canvas id="line" class="chart chart-line" 
+                            chart-data="lineData" chart-labels="lineLabels" 
+                            chart-series="['Total Sales']" chart-colors="['#1a237e']">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col s12 l6">
+                <div class="graph-container">
+                    <h6 style="font-weight:700; margin-bottom:20px;">Payment Collection Status</h6>
+                    <canvas id="doughnut" class="chart chart-doughnut"
+                            chart-data="donutData" chart-labels="donutLabels"
+                            chart-colors="['#008080', '#fdd835', '#0a0e23']">
+                    </canvas>
+                </div>
+            </div>
+
+            <div class="col s12 l6">
+                <div class="graph-container">
+                    <h6 style="font-weight:700; margin-bottom:20px;">Account Distribution</h6>
+                    <canvas id="pie" class="chart chart-pie"
+                            chart-data="pieData" chart-labels="pieLabels"
+                            chart-colors="['#1a237e', '#e53935', '#2e7d32']">
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col s12 m4">
+                <a href="@Url.Action("LoginPage","POS")" style="text-decoration:none;">
+                    <div class="menu-card">
+                        <i class="material-icons" style="font-size:48px; color:#3949ab;">vpn_key</i>
+                        <span class="menu-label">System Access</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col s12 m4">
+                <a href="@Url.Action("RegistrationPage","POS")" style="text-decoration:none;">
+                    <div class="menu-card">
+                        <i class="material-icons" style="font-size:48px; color:#e53935;">person_add</i>
+                        <span class="menu-label">New Registration</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col s12 m4">
+                <a href="@Url.Action("AdminPage","POS")" style="text-decoration:none;">
+                    <div class="menu-card">
+                        <i class="material-icons" style="font-size:48px; color:#2e7d32;">manage_accounts</i>
+                        <span class="menu-label">User Management</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+    </div> 
+</div>

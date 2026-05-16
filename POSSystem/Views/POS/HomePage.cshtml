@@ -1,0 +1,372 @@
+﻿@{
+    Layout = "~/Views/Shared/_POSSystemLayout.cshtml";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    :root {
+        --primary-blue: #1a237e;
+        --accent-yellow: #fdd835;
+        --deep-dark: #0a0e23;
+        --soft-gray: #f4f7fa;
+        --success-green: #2e7d32;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        background: linear-gradient(rgba(244, 247, 250, 0.92), rgba(244, 247, 250, 0.92)), 
+                    url('/Content/images/bg1.jpg'); 
+        background-attachment: fixed;
+        background-size: cover;
+        font-family: 'Inter', sans-serif;
+        color: var(--deep-dark);
+        margin: 0;
+    }
+
+    /* --- Professional Navbar --- */
+    nav {
+        background-color: var(--deep-dark);
+        height: 90px;
+        line-height: 90px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    .nav-wrapper {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+    }
+
+    .brand-logo {
+        position: relative !important;
+        display: flex !important;
+        align-items: center;
+        left: 0 !important;
+        height: 90px; /* Match Nav Height */
+        text-decoration: none;
+    }
+
+    .logo-badge {
+        background: var(--accent-yellow);
+        color: var(--deep-dark);
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(253, 216, 53, 0.3);
+    }
+
+    .brand-logo:hover .logo-badge {
+        transform: rotate(-8deg) scale(1.1);
+        background: white;
+    }
+
+    .brand-text {
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-size: 1.7rem !important;
+        color: white;
+        line-height: 1;
+    }
+
+    .brand-text b {
+        color: var(--accent-yellow);
+        font-weight: 900;
+    }
+
+    /* Absolute Centering for Links */
+    .nav-center-links {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-center-links li a {
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        color: rgba(255,255,255,0.8);
+        padding: 0 20px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-center-links li a:hover {
+        color: var(--accent-yellow);
+        background: transparent !important;
+    }
+
+    /* --- Hero Section --- */
+    .hero-visual {
+        position: relative;
+        height: 80vh;
+        background: linear-gradient(rgba(10, 14, 35, 0.75), rgba(10, 14, 35, 0.75)), 
+                    url('/Content/images/bg1.jpg'); 
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        clip-path: polygon(0 0, 100% 0, 100% 88%, 0% 100%);
+    }
+
+    .hero-content h1 {
+        font-weight: 900;
+        font-size: 5.5rem;
+        line-height: 0.9;
+        margin-bottom: 15px;
+        color: white;
+    }
+
+    .hero-subtitle {
+        font-size: 1.4rem;
+        color: var(--accent-yellow);
+        font-weight: 300;
+        letter-spacing: 2px;
+        margin-bottom: 40px;
+        display: block;
+    }
+
+    /* --- Inventory Cards --- */
+    .inventory-grid {
+        margin-top: -80px;
+        padding-bottom: 80px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .modern-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid rgba(0,0,0,0.05);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+        height: 100%;
+    }
+
+    .modern-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 25px 50px rgba(0,0,0,0.12);
+    }
+
+    .card-media {
+        height: 220px;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .price-tag {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: var(--deep-dark);
+        color: var(--accent-yellow);
+        padding: 12px 25px;
+        font-weight: 900;
+        font-size: 1.2rem;
+        border-top-left-radius: 20px;
+    }
+
+    .spec-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: #f0f2f5;
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: #444;
+        margin: 0 8px 10px 0;
+    }
+
+    .btn-custom {
+        border-radius: 50px;
+        font-weight: 700;
+        text-transform: none;
+        transition: 0.3s;
+    }
+
+    /* --- Footer --- */
+    .master-footer {
+        background: var(--deep-dark);
+        color: #9ea3ac;
+        padding: 80px 0 30px;
+    }
+</style>
+
+<nav>
+    <div class="nav-wrapper container">
+        <a href="HomePage" class="brand-logo">
+            <div class="logo-badge">
+                <i class="material-icons">precision_manufacturing</i>
+            </div>
+            <span class="brand-text">TRIKE<b>MASTER</b></span>
+        </a>
+
+        <ul class="nav-center-links hide-on-med-and-down">
+            <li><a href="#about">About</a></li>
+            <li><a href="#inventory">Available</a></li>
+            <li><a href="#contact">Contacts</a></li>
+        </ul>
+
+        <ul class="right" style="display: flex; align-items: center;">
+            <li class="hide-on-small-only">
+                <a href="/POS/RegistrationPage" class="btn-custom waves-effect" 
+                   style="border: 1px solid rgba(255,255,255,0.4); height: 45px; line-height: 45px; padding: 0 25px; margin-right: 15px; color: white;">
+                   Sign Up
+                </a>
+            </li>
+            <li>
+                <a href="/POS/LoginPage" class="btn btn-custom yellow darken-2 black-text waves-effect" 
+                   style="height: 45px; line-height: 45px; padding: 0 30px;">
+                   Sign In
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div id="about" class="hero-visual">
+    <div class="container">
+        <div class="hero-content">
+            <h1>BUILT FOR<br>THE WORK.</h1>
+            <span class="hero-subtitle">Premium Tricycles for Fleet & Business Management</span>
+        </div>
+    </div>
+</div>
+
+<div id="inventory" class="container inventory-grid">
+    <div class="row">
+        <div class="col s12 m4">
+            <div class="modern-card">
+                <div class="card-media">
+                    <i class="material-icons" style="font-size: 5rem; color: #ccc;">local_shipping</i>
+                    <div class="price-overlay">₱145,000</div>
+                </div>
+                <div class="card-body" style="padding: 25px;">
+                    <h4 style="font-weight:800; color:var(--primary-blue);">Titan Heavy</h4>
+                    <p class="grey-text">Engineered for maximum cargo capacity and industrial logistics.</p>
+                    <div style="margin: 15px 0;">
+                        <span class="spec-pill"><i class="material-icons tiny">bolt</i> 200CC</span>
+                        <span class="spec-pill"><i class="material-icons tiny">shutter_speed</i> 6-Speed</span>
+                    </div>
+                    <button class="btn-large btn-custom white-text z-depth-0" style="width:100%; background: var(--primary-blue);">Inquire Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col s12 m4">
+            <div class="modern-card">
+                <div class="card-media">
+                    <i class="material-icons" style="font-size: 5rem; color: #ccc;">hail</i>
+                    <div class="price-overlay">₱128,000</div>
+                </div>
+                <div class="card-body" style="padding: 25px;">
+                    <h4 style="font-weight:800; color:var(--primary-blue);">City Commute</h4>
+                    <p class="grey-text">The premium choice for passenger transport with high ROI.</p>
+                    <div style="margin: 15px 0;">
+                        <span class="spec-pill"><i class="material-icons tiny">groups</i> 6-Pass</span>
+                        <span class="spec-pill"><i class="material-icons tiny">eco</i> EFI Tech</span>
+                    </div>
+                    <button class="btn-large btn-custom white-text z-depth-0" style="width:100%; background: var(--primary-blue);">Inquire Now</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col s12 m4">
+            <div class="modern-card">
+                <div class="card-media">
+                    <i class="material-icons" style="font-size: 5rem; color: #ccc;">electric_moped</i>
+                    <div class="price-overlay">₱185,000</div>
+                </div>
+                <div class="card-body" style="padding: 25px;">
+                    <h4 style="font-weight:800; color:var(--primary-blue);">Volt Series</h4>
+                    <p class="grey-text">Next-gen lithium powered units for the eco-conscious fleet.</p>
+                    <div style="margin: 15px 0;">
+                        <span class="spec-pill"><i class="material-icons tiny">battery_full</i> 120KM</span>
+                        <span class="spec-pill"><i class="material-icons tiny">flash_on</i> 5KW Motor</span>
+                    </div>
+                    <button class="btn-large btn-custom white-text z-depth-0" style="width:100%; background: var(--primary-blue);">Inquire Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stats-bar">
+    <div class="container">
+        <div class="row">
+            <div class="col s6 m3 center-align stat-item">
+                <h2>15K+</h2>
+                <p class="grey-text">UNITS SOLD</p>
+            </div>
+            <div class="col s6 m3 center-align stat-item">
+                <h2>10YR</h2>
+                <p class="grey-text">WARRANTY</p>
+            </div>
+            <div class="col s6 m3 center-align stat-item">
+                <h2>24/7</h2>
+                <p class="grey-text">SUPPORT</p>
+            </div>
+            <div class="col s6 m3 center-align stat-item">
+                <h2>98%</h2>
+                <p class="grey-text">CLIENT ROI</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer id="contact" class="master-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m5">
+                <div class="brand-logo" style="margin-bottom: 20px;">
+                    <div class="logo-badge" style="background:#444; color:white;">
+                        <i class="material-icons">precision_manufacturing</i>
+                    </div>
+                    <span class="brand-text white-text" style="font-size: 1.4rem !important;">TRIKE<b>MASTER</b></span>
+                </div>
+                <p>Leading the tricycle manufacturing industry with precision engineering and customer-focused management systems.</p>
+            </div>
+            <div class="col s12 m3 offset-m1">
+                <h6 style="color:white; font-weight:800; margin-bottom:20px;">Quick Links</h6>
+                <ul>
+                    <li><a href="#about" class="grey-text">Our Story</a></li>
+                    <li><a href="#inventory" class="grey-text">Fleet Sales</a></li>
+                    <li><a href="/POS/LoginPage" class="grey-text">Admin Login</a></li>
+                </ul>
+            </div>
+            <div class="col s12 m3">
+                <h6 style="color:white; font-weight:800; margin-bottom:20px;">Contact Us</h6>
+                <p class="grey-text">
+                    <i class="material-icons tiny">location_on</i> Metro Manila, PH<br>
+                    <i class="material-icons tiny">phone</i> +63 (02) 888-TRIKE<br>
+                    <i class="material-icons tiny">email</i> support@trikemaster.ph
+                </p>
+            </div>
+        </div>
+        <div class="center-align" style="margin-top: 50px; padding-top: 30px; border-top: 1px solid #222;">
+            <p style="font-size: 0.8rem;">&copy; 2026 TrikeMaster Industrial Group. All Rights Reserved.</p>
+        </div>
+    </div>
+</footer>
